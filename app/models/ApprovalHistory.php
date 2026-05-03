@@ -17,7 +17,7 @@ class ApprovalHistory extends Model
                 u.username,
                 p.nama_lengkap as nama_approver
                 FROM {$this->table} ah
-                LEFT JOIN users u ON ah.id_user = u.id_user
+                LEFT JOIN users u ON ah.id_approver = u.id_user
                 LEFT JOIN pekerja p ON u.id_pekerja = p.id_pekerja
                 WHERE ah.id_pengajuan = :id_pengajuan
                 ORDER BY ah.tanggal_approval ASC";

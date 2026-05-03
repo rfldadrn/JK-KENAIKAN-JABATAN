@@ -1,4 +1,4 @@
-    </main>
+</main>
     
     <!-- Footer -->
     <footer class="footer" style="margin-left: var(--sidebar-width); padding: 20px; text-align: center; background: white; border-top: 1px solid #e0e0e0;">
@@ -31,6 +31,7 @@
     
     <!-- Custom JS -->
     <script>
+    jQuery(document).ready(function($) {
         // Sidebar toggle for mobile
         $('#sidebar-toggle').on('click', function() {
             $('#sidebar').toggleClass('show');
@@ -81,7 +82,57 @@
             pageLength: 10,
             responsive: true
         });
+    });
     </script>
+    
+    <!-- DataTables filter for Data Pekerja -->
+    <?php if (isset($currentPage) && $currentPage === 'pekerja'): ?>
+        <script>
+            if (typeof jQuery !== 'undefined') {
+                jQuery(document).ready(function($) {
+                    // Initialize DataTable
+                    var table = $('#pekerjaTable').DataTable({
+                        "language": {
+                            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
+                        },
+                        "pageLength": 25,
+                        "order": [[2, 'asc']]
+                    });
+                    // Function to apply filters
+                    function applyFilters() {
+                        var filterDivisi = $('#filterDivisi').val();
+                        var filterJabatan = $('#filterJabatan').val();
+                        var filterGolongan = $('#filterGolongan').val();
+                        var filterStatus = $('#filterStatus').val();
+                        $('#pekerjaTable tbody tr').each(function() {
+                            var $row = $(this);
+                            var rowDivisi = $row.data('divisi') || '';
+                            var rowJabatan = $row.data('jabatan') || '';
+                            var rowGolongan = $row.data('golongan') || '';
+                            var rowStatus = $row.data('status') || '';
+                            var showRow = true;
+                            if (filterDivisi && rowDivisi !== filterDivisi) showRow = false;
+                            if (filterJabatan && rowJabatan !== filterJabatan) showRow = false;
+                            if (filterGolongan && rowGolongan !== filterGolongan) showRow = false;
+                            if (filterStatus && rowStatus !== filterStatus) showRow = false;
+                            if (showRow) { $row.show(); } else { $row.hide(); }
+                        });
+                        table.draw(false);
+                    }
+                    $('#filterDivisi, #filterJabatan, #filterGolongan, #filterStatus').on('change', function() {
+                        applyFilters();
+                    });
+                    $('#btnResetFilter').on('click', function() {
+                        $('#filterDivisi, #filterJabatan, #filterGolongan, #filterStatus').val('');
+                        $('#pekerjaTable tbody tr').show();
+                        table.draw(false);
+                    });
+                });
+            } else {
+                console.error('jQuery not loaded! Cannot initialize filters.');
+            }
+        </script>
+    <?php endif; ?>
     
     <?php if (isset($additionalJS)): ?>
         <?= $additionalJS ?>

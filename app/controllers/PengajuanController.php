@@ -23,17 +23,36 @@ class PengajuanController extends Controller
     {
         $role = Session::get('role');
         
-        if ($role === 'admin') {
+        if ($role === 'admin' || $role === 'manager' || $role === 'kepala_wilayah') {
+            // Admin, Manager, Kepala Wilayah: show all submissions
             $pengajuan = $this->pengajuanModel->getAllWithDetails();
-        } else {
+        } elseif ($role === 'pekerja') {
+            // Pekerja: show only own submissions
             $id_pekerja = Session::get('id_pekerja');
             $pengajuan = $this->pengajuanModel->getByPekerja($id_pekerja);
+        } else {
+            // Atasan: should use /approval/semua instead
+            $pengajuan = [];
+        }
+
+        // Get pending count for approver roles
+        $pendingCount = 0;
+        if (in_array($role, ['atasan', 'manager', 'kepala_wilayah'])) {
+            $id_pekerja = Session::get('id_pekerja');
+            if ($role === 'atasan') {
+                $pendingCount = count($this->pengajuanModel->getPendingForAtasan($id_pekerja));
+            } elseif ($role === 'manager') {
+                $pendingCount = count($this->pengajuanModel->getPendingForManager());
+            } elseif ($role === 'kepala_wilayah') {
+                $pendingCount = count($this->pengajuanModel->getPendingForKepalaWilayah());
+            }
         }
 
         $data = [
             'pageTitle' => 'Daftar Pengajuan',
             'currentPage' => 'pengajuan',
-            'pengajuan' => $pengajuan
+            'pengajuan' => $pengajuan,
+            'pendingCount' => $pendingCount
         ];
 
         $this->view('layouts/header', $data);
@@ -135,21 +154,24 @@ class PengajuanController extends Controller
             // Handle file uploads
             $upload = new Upload();
             $requiredDocs = ['surat_permohonan', 'penilaian_kinerja', 'sertifikat'];
+            $uploadedCount = 0;
 
             foreach ($requiredDocs as $docType) {
                 if (isset($_FILES[$docType]) && $_FILES[$docType]['error'] === 0) {
-                    $uploadResult = $upload->uploadFile($_FILES[$docType], 'uploads/dokumen/', ['pdf', 'jpg', 'jpeg', 'png']);
+                    $allowedMimes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+                    $uploadResult = $upload->uploadFile($_FILES[$docType], 'documents/', $allowedMimes);
                     
-                    if ($uploadResult['success']) {
+                    if ($uploadResult) {
                         $this->dokumenModel->insert([
                             'id_pengajuan' => $id_pengajuan,
                             'jenis_dokumen' => $docType,
-                            'nama_dokumen' => $uploadResult['filename'],
-                            'file_path' => $uploadResult['path'],
+                            'nama_dokumen' => basename($uploadResult),
+                            'file_path' => $uploadResult,
                             'file_size' => $_FILES[$docType]['size'],
                             'mime_type' => $_FILES[$docType]['type'],
                             'uploaded_at' => date('Y-m-d H:i:s')
                         ]);
+                        $uploadedCount++;
                     }
                 }
             }
@@ -181,7 +203,24 @@ class PengajuanController extends Controller
         $role = Session::get('role');
         $id_pekerja = Session::get('id_pekerja');
         
-        if ($role !== 'admin' && $pengajuan->id_pekerja != $id_pekerja) {
+        // Allow access for:
+        // 1. Admin (full access)
+        // 2. Owner of the pengajuan
+        // 3. Atasan who is the direct superior
+        // 4. Manager and Kepala Wilayah (can view all for approval)
+        $hasAccess = false;
+        
+        if ($role === 'admin') {
+            $hasAccess = true;
+        } elseif ($pengajuan->id_pekerja == $id_pekerja) {
+            $hasAccess = true;
+        } elseif ($role === 'atasan' && $pengajuan->id_atasan == $id_pekerja) {
+            $hasAccess = true;
+        } elseif (in_array($role, ['manager', 'kepala_wilayah'])) {
+            $hasAccess = true;
+        }
+        
+        if (!$hasAccess) {
             $this->setFlash('error', 'Anda tidak memiliki akses ke pengajuan ini');
             $this->redirect('pengajuan');
             return;
@@ -190,17 +229,62 @@ class PengajuanController extends Controller
         $dokumen = $this->dokumenModel->getByPengajuan($id);
         $approvalHistory = $this->model('ApprovalHistory')->getByPengajuan($id);
 
+        // Get pending count for approver roles
+        $pendingCount = 0;
+        if (in_array($role, ['atasan', 'manager', 'kepala_wilayah'])) {
+            if ($role === 'atasan') {
+                $pendingCount = count($this->pengajuanModel->getPendingForAtasan($id_pekerja));
+            } elseif ($role === 'manager') {
+                $pendingCount = count($this->pengajuanModel->getPendingForManager());
+            } elseif ($role === 'kepala_wilayah') {
+                $pendingCount = count($this->pengajuanModel->getPendingForKepalaWilayah());
+            }
+        }
+
         $data = [
             'pageTitle' => 'Detail Pengajuan',
             'currentPage' => 'pengajuan',
             'pengajuan' => $pengajuan,
             'dokumen' => $dokumen,
-            'approvalHistory' => $approvalHistory
+            'approvalHistory' => $approvalHistory,
+            'pendingCount' => $pendingCount
         ];
 
         $this->view('layouts/header', $data);
         $this->view('layouts/sidebar', $data);
         $this->view('pengajuan/detail', $data);
+        $this->view('layouts/footer', $data);
+    }
+
+    public function riwayat()
+    {
+        $this->requireRole('pekerja');
+        
+        $id_pekerja = Session::get('id_pekerja');
+        
+        // Get completed/rejected submissions
+        $riwayat = $this->pengajuanModel->query(
+            "SELECT pen.*, 
+            g_sekarang.kode_golongan as golongan_sekarang,
+            g_tujuan.kode_golongan as golongan_tujuan
+            FROM pengajuan pen
+            LEFT JOIN golongan_jabatan g_sekarang ON pen.id_golongan_saat_ini = g_sekarang.id_golongan
+            LEFT JOIN golongan_jabatan g_tujuan ON pen.id_golongan_diajukan = g_tujuan.id_golongan
+            WHERE pen.id_pekerja = :id_pekerja
+            AND pen.status IN ('disetujui', 'ditolak_atasan', 'ditolak_manager', 'ditolak_kepala_wilayah', 'dibatalkan')
+            ORDER BY pen.tanggal_pengajuan DESC",
+            [':id_pekerja' => $id_pekerja]
+        );
+
+        $data = [
+            'pageTitle' => 'Riwayat Pengajuan',
+            'currentPage' => 'riwayat',
+            'riwayat' => $riwayat
+        ];
+
+        $this->view('layouts/header', $data);
+        $this->view('layouts/sidebar', $data);
+        $this->view('pengajuan/riwayat', $data);
         $this->view('layouts/footer', $data);
     }
 }

@@ -36,9 +36,8 @@
                 
                 <div class="sidebar-divider"></div>
                 <div class="sidebar-heading">Pengajuan</div>
-                
                 <li>
-                    <a href="<?= BASE_URL ?>/pengajuan" class="<?= ($currentPage ?? '') === 'pengajuan' ? 'active' : '' ?>">
+                    <a href="<?= BASE_URL ?>/approval/semua" class="<?= ($currentPage ?? '') === 'approval-semua' ? 'active' : '' ?>">
                         <i class="fas fa-file-alt"></i> Semua Pengajuan
                     </a>
                 </li>
@@ -97,14 +96,25 @@
                     </a>
                 </li>
                 
-                <div class="sidebar-divider"></div>
-                <div class="sidebar-heading">Pengajuan</div>
-                
-                <li>
-                    <a href="<?= BASE_URL ?>/pengajuan" class="<?= ($currentPage ?? '') === 'pengajuan' ? 'active' : '' ?>">
-                        <i class="fas fa-list"></i> Semua Pengajuan
-                    </a>
-                </li>
+                <?php if (Session::getRole() === 'atasan'): ?>
+                    <div class="sidebar-divider"></div>
+                    <div class="sidebar-heading">Pengajuan</div>
+                    
+                    <li>
+                        <a href="<?= BASE_URL ?>/approval/semua" class="<?= ($currentPage ?? '') === 'approval-semua' ? 'active' : '' ?>">
+                            <i class="fas fa-list"></i> Semua Pengajuan Bawahan
+                        </a>
+                    </li>
+                <?php else: ?>
+                    <div class="sidebar-divider"></div>
+                    <div class="sidebar-heading">Pengajuan</div>
+                    
+                    <li>
+                        <a href="<?= BASE_URL ?>/pengajuan" class="<?= ($currentPage ?? '') === 'pengajuan' ? 'active' : '' ?>">
+                            <i class="fas fa-list"></i> Semua Pengajuan
+                        </a>
+                    </li>
+                <?php endif; ?>
                 
                 <?php if (Session::getRole() === 'kepala_wilayah'): ?>
                     <div class="sidebar-divider"></div>

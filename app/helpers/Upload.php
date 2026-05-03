@@ -179,7 +179,7 @@ class Upload
      * @param int $maxHeight
      * @param int $quality
      */
-    private function resizeImage($filePath, $maxWidth, $maxHeight, $quality)
+    public function resizeImage($filePath, $maxWidth, $maxHeight = null, $quality = 85)
     {
         $imageInfo = getimagesize($filePath);
         

@@ -17,6 +17,64 @@
     </div>
 </div>
 
+<!-- Filter Section -->
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-building me-1"></i>Filter Divisi</label>
+                <select class="form-select form-select-sm" id="filterDivisi">
+                    <option value="">Semua Divisi</option>
+                    <?php foreach ($divisi as $d): ?>
+                        <option value="<?= Helper::escape($d->nama_divisi) ?>">
+                            <?= Helper::escape($d->nama_divisi) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-briefcase me-1"></i>Filter Jabatan</label>
+                <select class="form-select form-select-sm" id="filterJabatan">
+                    <option value="">Semua Jabatan</option>
+                    <?php foreach ($jabatan as $j): ?>
+                        <option value="<?= Helper::escape($j->nama_jabatan) ?>">
+                            <?= Helper::escape($j->nama_jabatan) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-layer-group me-1"></i>Filter Golongan</label>
+                <select class="form-select form-select-sm" id="filterGolongan">
+                    <option value="">Semua Golongan</option>
+                    <?php foreach ($golongan as $g): ?>
+                        <option value="<?= Helper::escape($g->kode_golongan) ?>">
+                            <?= Helper::escape($g->kode_golongan) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-toggle-on me-1"></i>Filter Status</label>
+                <select class="form-select form-select-sm" id="filterStatus">
+                    <option value="">Semua Status</option>
+                    <option value="Aktif">Aktif</option>
+                    <option value="Cuti">Cuti</option>
+                    <option value="Nonaktif">Nonaktif</option>
+                </select>
+            </div>
+        </div>
+        <div class="mt-3">
+            <button type="button" class="btn btn-sm btn-secondary" id="btnResetFilter">
+                <i class="fas fa-redo me-1"></i>Reset Filter
+            </button>
+            <small class="text-muted ms-3">
+                <i class="fas fa-info-circle"></i> Gunakan filter untuk mempersempit pencarian data
+            </small>
+        </div>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-body">
         <div class="table-responsive">
@@ -36,7 +94,10 @@
                 <tbody>
                     <?php if (!empty($pekerja)): ?>
                         <?php foreach ($pekerja as $p): ?>
-                            <tr>
+                            <tr data-divisi="<?= Helper::escape($p->nama_divisi ?? '') ?>" 
+                                data-jabatan="<?= Helper::escape($p->nama_jabatan ?? '') ?>" 
+                                data-golongan="<?= Helper::escape($p->kode_golongan ?? '') ?>" 
+                                data-status="<?= $p->status_kepegawaian === 'aktif' ? 'Aktif' : ($p->status_kepegawaian === 'cuti' ? 'Cuti' : 'Nonaktif') ?>">
                                 <td>
                                     <?php if ($p->foto): ?>
                                         <img src="<?= BASE_URL ?>/<?= $p->foto ?>" 
@@ -55,11 +116,19 @@
                                 <td><?= Helper::escape($p->nama_divisi ?? '-') ?></td>
                                 <td><?= Helper::escape($p->nama_jabatan ?? '-') ?></td>
                                 <td>
+                                    <span class="d-none golongan-plain"><?= Helper::escape($p->kode_golongan ?? '-') ?></span>
                                     <span class="badge bg-info">
                                         <?= Helper::escape($p->kode_golongan ?? '-') ?>
                                     </span>
                                 </td>
                                 <td>
+                                    <span class="d-none status-plain">
+                                        <?php
+                                            if ($p->status_kepegawaian === 'aktif') echo 'Aktif';
+                                            elseif ($p->status_kepegawaian === 'cuti') echo 'Cuti';
+                                            else echo 'Nonaktif';
+                                        ?>
+                                    </span>
                                     <?php if ($p->status_kepegawaian === 'aktif'): ?>
                                         <span class="badge bg-success">Aktif</span>
                                     <?php elseif ($p->status_kepegawaian === 'cuti'): ?>
@@ -96,17 +165,3 @@
         </div>
     </div>
 </div>
-
-<script>
-if (typeof jQuery !== 'undefined') {
-    $(document).ready(function() {
-        $('#pekerjaTable').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
-            },
-            "pageLength": 25,
-            "order": [[2, 'asc']]
-        });
-    });
-}
-</script>

@@ -17,7 +17,13 @@ class LaporanController extends Controller
 
     public function pengajuan()
     {
-        $this->requireRole('admin');
+        // Allow admin and kepala_wilayah
+        $role = Session::get('role');
+        if (!in_array($role, ['admin', 'kepala_wilayah'])) {
+            $this->setFlash('error', 'Anda tidak memiliki akses ke halaman ini');
+            $this->redirect('dashboard');
+            return;
+        }
         
         $pengajuan = $this->pengajuanModel->getAllWithDetails();
         $stats = $this->pengajuanModel->getStatistics();

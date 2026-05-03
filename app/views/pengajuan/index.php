@@ -25,7 +25,7 @@
             <table class="table table-hover" id="pengajuanTable">
                 <thead>
                     <tr>
-                        <?php if (Session::get('role') === 'admin'): ?>
+                        <?php if (in_array(Session::get('role'), ['admin', 'manager', 'kepala_wilayah'])): ?>
                             <th>Pekerja</th>
                         <?php endif; ?>
                         <th>Nomor Pengajuan</th>
@@ -40,10 +40,10 @@
                     <?php if (!empty($pengajuan)): ?>
                         <?php foreach ($pengajuan as $p): ?>
                             <tr>
-                                <?php if (Session::get('role') === 'admin'): ?>
+                                <?php if (in_array(Session::get('role'), ['admin', 'manager', 'kepala_wilayah'])): ?>
                                     <td>
                                         <strong><?= Helper::escape($p->nip) ?></strong><br>
-                                        <?= Helper::escape($p->nama_lengkap) ?>
+                                        <small><?= Helper::escape($p->nama_lengkap) ?></small>
                                     </td>
                                 <?php endif; ?>
                                 <td><strong><?= Helper::escape($p->nomor_pengajuan) ?></strong></td>
@@ -69,7 +69,7 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="<?= Session::get('role') === 'admin' ? '7' : '6' ?>" class="text-center">
+                            <td colspan="<?= in_array(Session::get('role'), ['admin', 'manager', 'kepala_wilayah']) ? '7' : '6' ?>" class="text-center">
                                 Belum ada pengajuan
                             </td>
                         </tr>
@@ -87,7 +87,7 @@ if (typeof jQuery !== 'undefined') {
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
             },
-            "order": [[<?= Session::get('role') === 'admin' ? '2' : '1' ?>, 'desc']]
+            "order": [[<?= in_array(Session::get('role'), ['admin', 'manager', 'kepala_wilayah']) ? '2' : '1' ?>, 'desc']]
         });
     });
 }

@@ -309,3 +309,20 @@
             </div>
         </div>
     </nav>
+
+
+    <!-- Flash Message (Presisi, di luar main-content) -->
+    <?php if ($flash = Session::getFlash()): ?>
+        <?php
+            $alertClass = 'alert-info';
+            if ($flash['type'] === 'success') $alertClass = 'alert-success';
+            elseif ($flash['type'] === 'error') $alertClass = 'alert-danger';
+            elseif ($flash['type'] === 'warning') $alertClass = 'alert-warning';
+        ?>
+        <div class="container-fluid" style="max-width: 700px; margin: calc(var(--navbar-height, 60px) + 20px) auto 0 auto;">
+            <div class="alert <?= $alertClass ?> alert-dismissible fade show text-center fw-semibold" role="alert">
+                <?= Helper::escape($flash['message']) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    <?php endif; ?>

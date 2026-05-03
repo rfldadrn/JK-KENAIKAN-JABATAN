@@ -9,6 +9,7 @@ class PekerjaController extends Controller
     private $divisiModel;
     private $jabatanModel;
     private $golonganModel;
+    private $userModel;
 
     public function __construct()
     {
@@ -17,16 +18,25 @@ class PekerjaController extends Controller
         $this->divisiModel = $this->model('Divisi');
         $this->jabatanModel = $this->model('Jabatan');
         $this->golonganModel = $this->model('GolonganJabatan');
+        $this->userModel = $this->model('User');
     }
 
     public function index()
     {
         $pekerja = $this->pekerjaModel->getAllWithDetails();
+        
+        // Get filter options
+        $divisi = $this->divisiModel->getAllActive();
+        $jabatan = $this->jabatanModel->getAllActive();
+        $golongan = $this->golonganModel->getAll();
 
         $data = [
             'pageTitle' => 'Data Pekerja',
             'currentPage' => 'pekerja',
-            'pekerja' => $pekerja
+            'pekerja' => $pekerja,
+            'divisi' => $divisi,
+            'jabatan' => $jabatan,
+            'golongan' => $golongan
         ];
 
         $this->view('layouts/header', $data);
@@ -88,12 +98,13 @@ class PekerjaController extends Controller
         $fotoPath = null;
         if (isset($_FILES['foto']) && $_FILES['foto']['error'] === 0) {
             $upload = new Upload();
-            $uploadResult = $upload->uploadFile($_FILES['foto'], 'uploads/pekerja/', ['jpg', 'jpeg', 'png']);
+            $uploadResult = $upload->uploadFile($_FILES['foto'], 'foto/', ['image/jpeg', 'image/jpg', 'image/png']);
             
-            if ($uploadResult['success']) {
-                $fotoPath = $uploadResult['path'];
+            if ($uploadResult) {
+                $fotoPath = $uploadResult;
                 // Resize image
-                $upload->resizeImage($uploadResult['full_path'], 300, 300);
+                $fullPath = UPLOAD_PATH . '/' . $uploadResult;
+                $upload->resizeImage($fullPath, 300, 300);
             }
         }
 
@@ -117,8 +128,25 @@ class PekerjaController extends Controller
         $result = $this->pekerjaModel->insert($data);
 
         if ($result) {
-            Helper::logActivity('Menambah pekerja: ' . $this->post('nama_lengkap'), 'pekerja');
-            $this->setFlash('success', 'Data pekerja berhasil ditambahkan');
+            // Auto-create user account for new employee
+            $userData = [
+                'username' => $this->post('nip'),
+                'password' => $this->post('nip'), // Default password = NIP
+                'email' => $this->post('email'),
+                'role' => 'pekerja', // Default role
+                'id_pekerja' => $result,
+                'is_active' => 1
+            ];
+            
+            $userCreated = $this->userModel->createUser($userData);
+            
+            if ($userCreated) {
+                Helper::logActivity('Menambah pekerja dan akun user: ' . $this->post('nama_lengkap'), 'pekerja');
+                $this->setFlash('success', 'Data pekerja dan akun user berhasil ditambahkan. Username: ' . $this->post('nip') . ', Password default: ' . $this->post('nip'));
+            } else {
+                Helper::logActivity('Menambah pekerja: ' . $this->post('nama_lengkap') . ' (akun user gagal dibuat)', 'pekerja');
+                $this->setFlash('warning', 'Data pekerja berhasil ditambahkan, namun gagal membuat akun user. Silakan buat manual.');
+            }
         } else {
             $this->setFlash('error', 'Gagal menambahkan data pekerja');
         }
@@ -191,15 +219,16 @@ class PekerjaController extends Controller
         $fotoPath = $pekerja->foto;
         if (isset($_FILES['foto']) && $_FILES['foto']['error'] === 0) {
             $upload = new Upload();
-            $uploadResult = $upload->uploadFile($_FILES['foto'], 'uploads/pekerja/', ['jpg', 'jpeg', 'png']);
+            $uploadResult = $upload->uploadFile($_FILES['foto'], 'foto/', ['image/jpeg', 'image/jpg', 'image/png']);
             
-            if ($uploadResult['success']) {
+            if ($uploadResult) {
                 // Delete old photo
                 if ($pekerja->foto) {
                     $upload->deleteFile($pekerja->foto);
                 }
-                $fotoPath = $uploadResult['path'];
-                $upload->resizeImage($uploadResult['full_path'], 300, 300);
+                $fotoPath = $uploadResult;
+                $fullPath = UPLOAD_PATH . '/' . $uploadResult;
+                $upload->resizeImage($fullPath, 300, 300);
             }
         }
 

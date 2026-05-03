@@ -74,26 +74,52 @@
         <?php if (!empty($dokumen)): ?>
             <div class="card mt-3">
                 <div class="card-header">
-                    <h5 class="mb-0">Dokumen Pendukung</h5>
+                    <h5 class="mb-0"><i class="fas fa-paperclip me-2"></i>Dokumen Pendukung</h5>
                 </div>
                 <div class="list-group list-group-flush">
                     <?php foreach ($dokumen as $dok): ?>
                         <div class="list-group-item">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                                    <?php 
+                                    $icon = 'fa-file';
+                                    $iconColor = 'text-secondary';
+                                    if (strpos($dok->mime_type, 'pdf') !== false) {
+                                        $icon = 'fa-file-pdf';
+                                        $iconColor = 'text-danger';
+                                    } elseif (strpos($dok->mime_type, 'image') !== false) {
+                                        $icon = 'fa-file-image';
+                                        $iconColor = 'text-success';
+                                    }
+                                    ?>
+                                    <i class="fas <?= $icon ?> <?= $iconColor ?> me-2"></i>
                                     <strong><?= ucwords(str_replace('_', ' ', $dok->jenis_dokumen)) ?></strong><br>
                                     <small class="text-muted">
                                         <?= Helper::escape($dok->nama_dokumen) ?> 
                                         (<?= Helper::formatFileSize($dok->file_size) ?>)
                                     </small>
                                 </div>
-                                <a href="<?= BASE_URL ?>/<?= $dok->file_path ?>" target="_blank" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-download"></i> Download
-                                </a>
+                                <div>
+                                    <a href="<?= BASE_URL ?>/dokumen/display/<?= $dok->id_dokumen ?>" target="_blank" class="btn btn-sm btn-primary me-1">
+                                        <i class="fas fa-eye"></i> Lihat
+                                    </a>
+                                    <a href="<?= BASE_URL ?>/dokumen/downloadFile/<?= $dok->id_dokumen ?>" class="btn btn-sm btn-success">
+                                        <i class="fas fa-download"></i> Unduh
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     <?php endforeach; ?>
+                </div>
+            </div>
+        <?php else: ?>
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-paperclip me-2"></i>Dokumen Pendukung</h5>
+                </div>
+                <div class="card-body text-center text-muted">
+                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                    <p>Tidak ada dokumen pendukung</p>
                 </div>
             </div>
         <?php endif; ?>

@@ -108,6 +108,20 @@ if (typeof jQuery !== 'undefined') {
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
             },
+            "pageLength": 25,
+            "order": [[3, 'desc']]
+        });
+    });
+}
+</script>
+
+<script>
+if (typeof jQuery !== 'undefined') {
+    $(document).ready(function() {
+        $('#laporanTable').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
+            },
             "pageLength": 25
         });
     });

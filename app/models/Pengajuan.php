@@ -9,6 +9,24 @@ class Pengajuan extends Model
     protected $primaryKey = 'id_pengajuan';
 
     /**
+     * Get all pengajuan (all status) by bawahan langsung (atasan)
+     */
+    public function getAllByBawahan($id_atasan)
+    {
+        $sql = "SELECT pen.*, 
+                p.nip, p.nama_lengkap,
+                g_sekarang.kode_golongan as golongan_sekarang,
+                g_tujuan.kode_golongan as golongan_tujuan
+                FROM {$this->table} pen
+                INNER JOIN pekerja p ON pen.id_pekerja = p.id_pekerja
+                LEFT JOIN golongan_jabatan g_sekarang ON pen.id_golongan_saat_ini = g_sekarang.id_golongan
+                LEFT JOIN golongan_jabatan g_tujuan ON pen.id_golongan_diajukan = g_tujuan.id_golongan
+                WHERE p.id_atasan = :id_atasan
+                ORDER BY pen.tanggal_pengajuan DESC";
+        return $this->query($sql, [':id_atasan' => $id_atasan]);
+    }
+
+    /**
      * Get all pengajuan with details
      */
     public function getAllWithDetails()
@@ -53,7 +71,7 @@ class Pengajuan extends Model
     {
         $sql = "SELECT pen.*, 
                 p.nip, p.nama_lengkap, p.email, p.no_telepon, p.foto,
-                p.tanggal_bergabung, p.nilai_kinerja_terakhir,
+                p.tanggal_bergabung, p.nilai_kinerja_terakhir, p.id_atasan,
                 g_sekarang.kode_golongan as kode_golongan_sekarang, 
                 g_sekarang.nama_golongan as nama_golongan_sekarang,
                 g_tujuan.kode_golongan as kode_golongan_tujuan,

@@ -209,12 +209,21 @@ class GolonganController extends Controller
             return;
         }
 
+
         // Check if used by pekerja
         $sql = "SELECT COUNT(*) as count FROM pekerja WHERE id_golongan_saat_ini = :id";
         $result = $this->golonganModel->queryOne($sql, [':id' => $id]);
-        
         if ($result && $result->count > 0) {
             $this->setFlash('error', 'Golongan tidak dapat dihapus karena sedang digunakan oleh pekerja');
+            $this->redirect('golongan');
+            return;
+        }
+
+        // Check if used by jabatan (id_golongan_minimal)
+        $sqlJabatan = "SELECT COUNT(*) as count FROM jabatan WHERE id_golongan_minimal = :id";
+        $resultJabatan = $this->golonganModel->queryOne($sqlJabatan, [':id' => $id]);
+        if ($resultJabatan && $resultJabatan->count > 0) {
+            $this->setFlash('error', 'Golongan tidak dapat dihapus karena masih digunakan pada data jabatan');
             $this->redirect('golongan');
             return;
         }
