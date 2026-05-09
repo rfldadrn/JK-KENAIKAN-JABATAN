@@ -126,7 +126,7 @@
         
         <div class="card mt-4">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-layer-group me-2"></i>Pekerja per Golongan</h5>
+                <h5 class="mb-0"><i class="fas fa-layer-group me-2"></i>Karyawan per Golongan</h5>
             </div>
             <div class="card-body">
                 <canvas id="golonganChart"></canvas>
@@ -170,7 +170,7 @@ function initCharts() {
             data: {
                 labels: <?= json_encode(array_column($pekerjaByGolongan, 'kode_golongan')) ?>,
                 datasets: [{
-                    label: 'Jumlah Pekerja',
+                    label: 'Jumlah Karyawan',
                     data: <?= json_encode(array_column($pekerjaByGolongan, 'total')) ?>,
                     backgroundColor: '#0052CC'
                 }]

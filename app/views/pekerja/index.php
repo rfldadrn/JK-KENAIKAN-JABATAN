@@ -1,17 +1,17 @@
 <div class="content-header">
     <div class="d-flex justify-content-between align-items-center">
         <div>
-            <h1><i class="fas fa-users me-2"></i>Data Pekerja</h1>
+            <h1><i class="fas fa-users me-2"></i>Data Karyawan</h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/dashboard">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Data Pekerja</li>
+                    <li class="breadcrumb-item active">Data Karyawan</li>
                 </ol>
             </nav>
         </div>
         <div>
             <a href="<?= BASE_URL ?>/pekerja/create" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Tambah Pekerja
+                <i class="fas fa-plus me-2"></i>Tambah Karyawan
             </a>
         </div>
     </div>

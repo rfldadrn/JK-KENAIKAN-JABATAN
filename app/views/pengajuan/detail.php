@@ -39,7 +39,7 @@
                         <td><?= Helper::getStatusBadge($pengajuan->status) ?></td>
                     </tr>
                     <tr>
-                        <th>Pekerja</th>
+                        <th>Karyawan</th>
                         <td>
                             <strong><?= Helper::escape($pengajuan->nip) ?></strong> - <?= Helper::escape($pengajuan->nama_lengkap) ?><br>
                             <small class="text-muted"><?= Helper::escape($pengajuan->nama_jabatan) ?> - <?= Helper::escape($pengajuan->nama_divisi) ?></small>

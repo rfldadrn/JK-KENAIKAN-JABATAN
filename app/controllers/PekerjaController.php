@@ -31,7 +31,7 @@ class PekerjaController extends Controller
         $golongan = $this->golonganModel->getAll();
 
         $data = [
-            'pageTitle' => 'Data Pekerja',
+            'pageTitle' => 'Data Karyawan',
             'currentPage' => 'pekerja',
             'pekerja' => $pekerja,
             'divisi' => $divisi,
@@ -53,7 +53,7 @@ class PekerjaController extends Controller
         $atasan = $this->pekerjaModel->getActiveForDropdown();
 
         $data = [
-            'pageTitle' => 'Tambah Pekerja',
+            'pageTitle' => 'Tambah Karyawan',
             'currentPage' => 'pekerja',
             'divisi' => $divisi,
             'jabatan' => $jabatan,
@@ -141,14 +141,14 @@ class PekerjaController extends Controller
             $userCreated = $this->userModel->createUser($userData);
             
             if ($userCreated) {
-                Helper::logActivity('Menambah pekerja dan akun user: ' . $this->post('nama_lengkap'), 'pekerja');
-                $this->setFlash('success', 'Data pekerja dan akun user berhasil ditambahkan. Username: ' . $this->post('nip') . ', Password default: ' . $this->post('nip'));
+                Helper::logActivity('Menambah Karyawan dan akun user: ' . $this->post('nama_lengkap'), 'pekerja');
+                $this->setFlash('success', 'Data karyawan dan akun user berhasil ditambahkan. Username: ' . $this->post('nip') . ', Password default: ' . $this->post('nip'));
             } else {
-                Helper::logActivity('Menambah pekerja: ' . $this->post('nama_lengkap') . ' (akun user gagal dibuat)', 'pekerja');
-                $this->setFlash('warning', 'Data pekerja berhasil ditambahkan, namun gagal membuat akun user. Silakan buat manual.');
+                Helper::logActivity('Menambah karyawan: ' . $this->post('nama_lengkap') . ' (akun user gagal dibuat)', 'pekerja');
+                $this->setFlash('warning', 'Data karyawan berhasil ditambahkan, namun gagal membuat akun user. Silakan buat manual.');
             }
         } else {
-            $this->setFlash('error', 'Gagal menambahkan data pekerja');
+            $this->setFlash('error', 'Gagal menambahkan data karyawan');
         }
 
         $this->redirect('pekerja');
@@ -159,7 +159,7 @@ class PekerjaController extends Controller
         $pekerja = $this->pekerjaModel->getById($id);
 
         if (!$pekerja) {
-            $this->setFlash('error', 'Pekerja tidak ditemukan');
+            $this->setFlash('error', 'Karyawan tidak ditemukan');
             $this->redirect('pekerja');
             return;
         }
@@ -170,7 +170,7 @@ class PekerjaController extends Controller
         $atasan = $this->pekerjaModel->getActiveForDropdown();
 
         $data = [
-            'pageTitle' => 'Edit Pekerja',
+            'pageTitle' => 'Edit Karyawan',
             'currentPage' => 'pekerja',
             'pekerja' => $pekerja,
             'divisi' => $divisi,
@@ -194,7 +194,7 @@ class PekerjaController extends Controller
 
         $pekerja = $this->pekerjaModel->getById($id);
         if (!$pekerja) {
-            $this->setFlash('error', 'Pekerja tidak ditemukan');
+            $this->setFlash('error', 'Karyawan tidak ditemukan');
             $this->redirect('pekerja');
             return;
         }
@@ -252,13 +252,13 @@ class PekerjaController extends Controller
         $result = $this->pekerjaModel->update($id, $data);
 
         if ($result) {
-            Helper::logActivity('Mengupdate pekerja: ' . $this->post('nama_lengkap'), 'pekerja');
-            $this->setFlash('success', 'Data pekerja berhasil diupdate');
+            Helper::logActivity('Mengupdate karyawan: ' . $this->post('nama_lengkap'), 'karyawan');
+            $this->setFlash('success', 'Data karyawan berhasil diupdate');
         } else {
-            $this->setFlash('error', 'Gagal mengupdate data pekerja');
+            $this->setFlash('error', 'Gagal mengupdate data karyawan');
         }
 
-        $this->redirect('pekerja');
+        $this->redirect('karyawan');
     }
 
     public function detail($id)
@@ -266,7 +266,7 @@ class PekerjaController extends Controller
         $pekerja = $this->pekerjaModel->getWithDetails($id);
 
         if (!$pekerja) {
-            $this->setFlash('error', 'Pekerja tidak ditemukan');
+            $this->setFlash('error', 'Karyawan tidak ditemukan');
             $this->redirect('pekerja');
             return;
         }
@@ -274,7 +274,7 @@ class PekerjaController extends Controller
         $bawahan = $this->pekerjaModel->getSubordinates($id);
 
         $data = [
-            'pageTitle' => 'Detail Pekerja',
+            'pageTitle' => 'Detail Karyawan',
             'currentPage' => 'pekerja',
             'pekerja' => $pekerja,
             'bawahan' => $bawahan
@@ -291,7 +291,7 @@ class PekerjaController extends Controller
         $pekerja = $this->pekerjaModel->getById($id);
         
         if (!$pekerja) {
-            $this->setFlash('error', 'Pekerja tidak ditemukan');
+            $this->setFlash('error', 'Karyawan tidak ditemukan');
             $this->redirect('pekerja');
             return;
         }
@@ -305,10 +305,10 @@ class PekerjaController extends Controller
         $result = $this->pekerjaModel->delete($id);
 
         if ($result) {
-            Helper::logActivity('Menghapus pekerja: ' . $pekerja->nama_lengkap, 'pekerja');
-            $this->setFlash('success', 'Data pekerja berhasil dihapus');
+            Helper::logActivity('Menghapus Karyawan: ' . $pekerja->nama_lengkap, 'pekerja');
+            $this->setFlash('success', 'Data Karyawan berhasil dihapus');
         } else {
-            $this->setFlash('error', 'Gagal menghapus data pekerja');
+            $this->setFlash('error', 'Gagal menghapus data Karyawan');
         }
 
         $this->redirect('pekerja');

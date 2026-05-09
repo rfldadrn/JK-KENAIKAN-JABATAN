@@ -48,7 +48,7 @@ class LaporanController extends Controller
         $pekerja = $this->pekerjaModel->getAllWithDetails();
 
         $data = [
-            'pageTitle' => 'Laporan Data Pekerja',
+            'pageTitle' => 'Laporan Data Karyawan',
             'currentPage' => 'laporan-pekerja',
             'pekerja' => $pekerja
         ];

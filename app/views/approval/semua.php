@@ -18,7 +18,7 @@
                 <thead>
                     <tr>
                         <th>Nomor Pengajuan</th>
-                        <th>Pekerja</th>
+                        <th>Karyawan</th>
                         <th>Tanggal</th>
                         <th>Golongan Sekarang</th>
                         <th>Golongan Tujuan</th>

@@ -27,7 +27,7 @@
                         <th>Kode</th>
                         <th>Nama Divisi</th>
                         <th>Deskripsi</th>
-                        <th>Jumlah Pekerja</th>
+                        <th>Jumlah Karyawan</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -40,7 +40,7 @@
                                 <td><strong><?= Helper::escape($row->kode_divisi) ?></strong></td>
                                 <td><?= Helper::escape($row->nama_divisi) ?></td>
                                 <td><?= Helper::truncate($row->deskripsi ?? '-', 50) ?></td>
-                                <td><?= $row->jumlah_pekerja ?? 0 ?> pekerja</td>
+                                <td><?= $row->jumlah_pekerja ?? 0 ?> Karyawan</td>
                                 <td>
                                     <?php if ($row->is_active): ?>
                                         <span class="badge bg-success">Aktif</span>

@@ -77,7 +77,7 @@ class PengajuanController extends Controller
         $pekerja = $this->pekerjaModel->getWithDetails($id_pekerja);
         
         if (!$pekerja) {
-            $this->setFlash('error', 'Data pekerja tidak ditemukan');
+            $this->setFlash('error', 'Data Karyawan tidak ditemukan');
             $this->redirect('dashboard');
             return;
         }

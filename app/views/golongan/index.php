@@ -27,7 +27,7 @@
                         <th>Kode</th>
                         <th>Nama Golongan</th>
                         <th>Level</th>
-                        <th>Jumlah Pekerja</th>
+                        <th>Jumlah Karyawan</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -44,7 +44,7 @@
                                         Level <?= $row->level ?>-<?= $row->sub_level ?>
                                     </span>
                                 </td>
-                                <td><?= $row->jumlah_pekerja ?? 0 ?> pekerja</td>
+                                <td><?= $row->jumlah_pekerja ?? 0 ?> Karyawan</td>
                                 <td>
                                     <?php if ($row->is_active): ?>
                                         <span class="badge bg-success">Aktif</span>

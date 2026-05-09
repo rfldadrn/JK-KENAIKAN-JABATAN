@@ -1,9 +1,9 @@
 <div class="content-header">
-    <h1><i class="fas fa-user-plus me-2"></i>Tambah Pekerja</h1>
+    <h1><i class="fas fa-user-plus me-2"></i>Tambah Karyawan</h1>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/dashboard">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/pekerja">Data Pekerja</a></li>
+            <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/pekerja">Data Karyawan</a></li>
             <li class="breadcrumb-item active">Tambah</li>
         </ol>
     </nav>

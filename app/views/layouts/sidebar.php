@@ -30,7 +30,7 @@
                 </li>
                 <li>
                     <a href="<?= BASE_URL ?>/pekerja" class="<?= ($currentPage ?? '') === 'pekerja' ? 'active' : '' ?>">
-                        <i class="fas fa-users"></i> Data Pekerja
+                        <i class="fas fa-users"></i> Data Karyawan
                     </a>
                 </li>
                 
@@ -52,7 +52,7 @@
                 </li>
                 <li>
                     <a href="<?= BASE_URL ?>/laporan/pekerja" class="<?= ($currentPage ?? '') === 'laporan-pekerja' ? 'active' : '' ?>">
-                        <i class="fas fa-chart-pie"></i> Laporan Pekerja
+                        <i class="fas fa-chart-pie"></i> Laporan Karyawan
                     </a>
                 </li>
                 

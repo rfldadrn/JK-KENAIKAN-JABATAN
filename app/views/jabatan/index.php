@@ -27,7 +27,7 @@
                         <th>Kode</th>
                         <th>Nama Jabatan</th>
                         <th>Golongan Minimal</th>
-                        <th>Jumlah Pekerja</th>
+                        <th>Jumlah Karyawan</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -46,7 +46,7 @@
                                         <span class="text-muted">-</span>
                                     <?php endif; ?>
                                 </td>
-                                <td><?= $row->jumlah_pekerja ?? 0 ?> pekerja</td>
+                                <td><?= $row->jumlah_pekerja ?? 0 ?> Karyawan</td>
                                 <td>
                                     <?php if ($row->is_active): ?>
                                         <span class="badge bg-success">Aktif</span>

@@ -26,7 +26,7 @@
                 <thead>
                     <tr>
                         <?php if (in_array(Session::get('role'), ['admin', 'manager', 'kepala_wilayah'])): ?>
-                            <th>Pekerja</th>
+                            <th>Karyawan</th>
                         <?php endif; ?>
                         <th>Nomor Pengajuan</th>
                         <th>Tanggal</th>

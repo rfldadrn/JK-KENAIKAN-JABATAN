@@ -74,7 +74,7 @@
                     <tr>
                         <th>No</th>
                         <th>Nomor Pengajuan</th>
-                        <th>Pekerja</th>
+                        <th>Karyawan</th>
                         <th>Tanggal</th>
                         <th>Golongan</th>
                         <th>Status</th>

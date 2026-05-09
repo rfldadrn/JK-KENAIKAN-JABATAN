@@ -1,17 +1,17 @@
 <div class="content-header">
-    <h1><i class="fas fa-chart-bar me-2"></i>Laporan Data Pekerja</h1>
+    <h1><i class="fas fa-chart-bar me-2"></i>Laporan Data Karyawan</h1>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/dashboard">Dashboard</a></li>
             <li class="breadcrumb-item">Laporan</li>
-            <li class="breadcrumb-item active">Pekerja</li>
+            <li class="breadcrumb-item active">Karyawan</li>
         </ol>
     </nav>
 </div>
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Daftar Pekerja</h5>
+        <h5 class="mb-0">Daftar Karyawan</h5>
         <button onclick="window.print()" class="btn btn-sm btn-primary">
             <i class="fas fa-print"></i> Cetak
         </button>
