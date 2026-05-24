@@ -31,9 +31,37 @@ class Database
 
         try {
             $this->connection = new PDO($dsn, $this->username, $this->password, $options);
+            $this->applyRuntimeMigrations();
         } catch (PDOException $e) {
             die("Database Connection Failed: " . $e->getMessage());
         }
+    }
+
+    /**
+     * Apply lightweight, idempotent schema updates needed by new features.
+     */
+    private function applyRuntimeMigrations()
+    {
+        // Add per-submission performance score to avoid reusing old master score.
+        if (!$this->columnExists('pengajuan', 'nilai_kinerja_pengajuan')) {
+            $sql = "ALTER TABLE pengajuan
+                    ADD COLUMN nilai_kinerja_pengajuan DECIMAL(5,2) NULL
+                    AFTER alasan_pengajuan";
+            $this->connection->exec($sql);
+        }
+    }
+
+    /**
+     * Check if a column exists in a table.
+     */
+    private function columnExists($table, $column)
+    {
+        // MySQL does not support parameter binding for identifiers, so escape manually
+        $table = preg_replace('/[^a-zA-Z0-9_]/', '', $table);
+        $column = preg_replace('/[^a-zA-Z0-9_]/', '', $column);
+        $sql = "SHOW COLUMNS FROM `{$table}` LIKE '{$column}'";
+        $stmt = $this->connection->query($sql);
+        return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
     }
 
     /**

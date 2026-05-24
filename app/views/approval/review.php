@@ -70,6 +70,20 @@
                             <strong class="<?= $pengajuan->nilai_kinerja_terakhir >= 80 ? 'text-success' : 'text-warning' ?>">
                                 <?= $pengajuan->nilai_kinerja_terakhir ?>
                             </strong>
+                            <small class="text-muted d-block">Nilai terakhir pada data pekerja</small>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Nilai Penilaian Pengajuan</th>
+                        <td>
+                            <?php if ($pengajuan->nilai_kinerja_pengajuan !== null): ?>
+                                <strong class="<?= $pengajuan->nilai_kinerja_pengajuan >= MIN_NILAI_KINERJA ? 'text-success' : 'text-warning' ?>">
+                                    <?= $pengajuan->nilai_kinerja_pengajuan ?>
+                                </strong>
+                                <small class="text-muted d-block">Nilai hasil review pengajuan saat ini</small>
+                            <?php else: ?>
+                                <span class="text-muted">Belum dinilai</span>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <tr>
@@ -170,6 +184,17 @@
             </div>
             <div class="card-body">
                 <form method="POST" action="<?= BASE_URL ?>/approval/process/<?= $pengajuan->id_pengajuan ?>">
+                    <?php if (Session::get('role') === 'atasan'): ?>
+                        <div class="mb-3">
+                            <label class="form-label">Nilai Penilaian Kinerja Pengajuan <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="nilai_kinerja_pengajuan"
+                                   min="0" max="100" step="0.01"
+                                   value="<?= $pengajuan->nilai_kinerja_pengajuan !== null ? $pengajuan->nilai_kinerja_pengajuan : '' ?>"
+                                   placeholder="Contoh: 85.50">
+                            <small class="text-muted">Wajib diisi oleh atasan saat menyetujui pengajuan. Minimal <?= MIN_NILAI_KINERJA ?>.</small>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="mb-3">
                         <label class="form-label">Catatan</label>
                         <textarea class="form-control" name="catatan" rows="4" 

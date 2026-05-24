@@ -148,6 +148,8 @@ kenaikanjabatan/
 ### Business Rules
 - Minimal masa kerja: 2 tahun
 - Nilai kinerja minimal: 80/100
+- Nilai penilaian kinerja per pengajuan diisi saat review atasan
+- Nilai penilaian pengajuan terakhir yang disetujui akan menjadi nilai kinerja terbaru pekerja
 - Hanya bisa mengajukan 1 tingkat di atas golongan saat ini
 - Tidak boleh ada pengajuan aktif yang sedang diproses
 - Maksimal ukuran upload: 2MB per file

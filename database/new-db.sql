@@ -371,6 +371,7 @@ CREATE TABLE IF NOT EXISTS `pengajuan` (
   `id_golongan_diajukan` int NOT NULL,
   `tanggal_pengajuan` date NOT NULL,
   `alasan_pengajuan` text COLLATE utf8mb4_unicode_ci NOT NULL,
+	`nilai_kinerja_pengajuan` decimal(5,2) DEFAULT NULL,
   `status` enum('pending','disetujui_atasan','disetujui_manager','disetujui','ditolak_atasan','ditolak_manager','ditolak_kepala_wilayah','dibatalkan') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
   `catatan_pemohon` text COLLATE utf8mb4_unicode_ci,
   `tanggal_efektif` date DEFAULT NULL,

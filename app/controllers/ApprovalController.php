@@ -151,13 +151,61 @@ class ApprovalController extends Controller
 
         $action = $this->post('action'); // approve or reject
         $catatan = $this->post('catatan');
+        $nilaiKinerjaPengajuan = $this->post('nilai_kinerja_pengajuan');
         $role = Session::get('role');
         $id_user = Session::get('user_id');
+
+        if (!in_array($role, ['atasan', 'manager', 'kepala_wilayah'])) {
+            $this->setFlash('error', 'Anda tidak memiliki hak untuk memproses approval');
+            $this->redirect('dashboard');
+            return;
+        }
+
+        // Ensure approval can only be processed by the correct level and status.
+        if (!$this->canReview($pengajuan, $role)) {
+            $this->setFlash('error', 'Pengajuan ini tidak dapat diproses pada level Anda');
+            $this->redirect('approval');
+            return;
+        }
 
         if (!in_array($action, ['approve', 'reject'])) {
             $this->setFlash('error', 'Aksi tidak valid');
             $this->redirect('approval/review/' . $id);
             return;
+        }
+
+        if ($action === 'approve') {
+            if ($role === 'atasan') {
+                if ($nilaiKinerjaPengajuan === null || $nilaiKinerjaPengajuan === '') {
+                    $this->setFlash('error', 'Nilai penilaian kinerja wajib diisi untuk approval atasan');
+                    $this->redirect('approval/review/' . $id);
+                    return;
+                }
+
+                if (!is_numeric($nilaiKinerjaPengajuan) || $nilaiKinerjaPengajuan < 0 || $nilaiKinerjaPengajuan > 100) {
+                    $this->setFlash('error', 'Nilai penilaian kinerja harus berupa angka antara 0 sampai 100');
+                    $this->redirect('approval/review/' . $id);
+                    return;
+                }
+
+                if ((float)$nilaiKinerjaPengajuan < MIN_NILAI_KINERJA) {
+                    $this->setFlash('error', 'Nilai penilaian kinerja minimal ' . MIN_NILAI_KINERJA . ' untuk melanjutkan approval');
+                    $this->redirect('approval/review/' . $id);
+                    return;
+                }
+            } else {
+                if ($pengajuan->nilai_kinerja_pengajuan === null) {
+                    $this->setFlash('error', 'Nilai penilaian kinerja belum diisi oleh atasan');
+                    $this->redirect('approval/review/' . $id);
+                    return;
+                }
+
+                if ((float)$pengajuan->nilai_kinerja_pengajuan < MIN_NILAI_KINERJA) {
+                    $this->setFlash('error', 'Nilai penilaian kinerja pengajuan belum memenuhi syarat minimal');
+                    $this->redirect('approval/review/' . $id);
+                    return;
+                }
+            }
         }
 
         $this->pengajuanModel->beginTransaction();
@@ -166,8 +214,16 @@ class ApprovalController extends Controller
             // Determine new status
             $newStatus = $this->getNewStatus($pengajuan->status, $role, $action);
 
-            // Update pengajuan status
-            $this->pengajuanModel->update($id, ['status' => $newStatus]);
+            if ($newStatus === $pengajuan->status) {
+                throw new Exception('Status pengajuan tidak berubah. Proses approval dibatalkan');
+            }
+
+            // Update pengajuan status and save performance score from direct supervisor review.
+            $pengajuanUpdate = ['status' => $newStatus];
+            if ($role === 'atasan' && $action === 'approve') {
+                $pengajuanUpdate['nilai_kinerja_pengajuan'] = round((float)$nilaiKinerjaPengajuan, 2);
+            }
+            $this->pengajuanModel->update($id, $pengajuanUpdate);
 
             // Add approval history
             $this->approvalModel->addApproval([
@@ -181,8 +237,13 @@ class ApprovalController extends Controller
 
             // If final approval, update pekerja golongan
             if ($newStatus === 'disetujui') {
+                $newNilaiKinerja = $role === 'atasan' && $action === 'approve'
+                    ? round((float)$nilaiKinerjaPengajuan, 2)
+                    : $pengajuan->nilai_kinerja_pengajuan;
+
                 $this->pekerjaModel->update($pengajuan->id_pekerja, [
-                    'id_golongan_saat_ini' => $pengajuan->id_golongan_diajukan
+                    'id_golongan_saat_ini' => $pengajuan->id_golongan_diajukan,
+                    'nilai_kinerja_terakhir' => $newNilaiKinerja
                 ]);
             }
 

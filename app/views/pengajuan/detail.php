@@ -67,6 +67,18 @@
                         <th>Alasan Pengajuan</th>
                         <td><?= nl2br(Helper::escape($pengajuan->alasan_pengajuan)) ?></td>
                     </tr>
+                    <tr>
+                        <th>Nilai Penilaian Pengajuan</th>
+                        <td>
+                            <?php if ($pengajuan->nilai_kinerja_pengajuan !== null): ?>
+                                <strong class="<?= $pengajuan->nilai_kinerja_pengajuan >= MIN_NILAI_KINERJA ? 'text-success' : 'text-warning' ?>">
+                                    <?= $pengajuan->nilai_kinerja_pengajuan ?>
+                                </strong>
+                            <?php else: ?>
+                                <span class="text-muted">Belum dinilai</span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
