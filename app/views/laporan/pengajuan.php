@@ -1,3 +1,15 @@
+<?php
+$pengajuan = $pengajuan ?? [];
+$stats = $stats ?? (object) [
+    'total' => 0,
+    'pending' => 0,
+    'disetujui_atasan' => 0,
+    'disetujui_manager' => 0,
+    'disetujui' => 0,
+    'ditolak' => 0
+];
+?>
+
 <div class="content-header">
     <h1><i class="fas fa-chart-bar me-2"></i>Laporan Pengajuan</h1>
     <nav aria-label="breadcrumb">
@@ -63,9 +75,14 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Daftar Pengajuan</h5>
-        <button onclick="window.print()" class="btn btn-sm btn-primary">
-            <i class="fas fa-print"></i> Cetak
-        </button>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="<?= BASE_URL ?>/laporan/cetakRiwayatPengajuan" target="_blank" class="btn btn-sm btn-primary">
+                <i class="fas fa-print"></i> Cetak Riwayat Pengajuan
+            </a>
+            <a href="<?= BASE_URL ?>/laporan/cetakHasilKenaikanJabatan" target="_blank" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-file-signature"></i> Cetak Hasil Kenaikan
+            </a>
+        </div>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -110,19 +127,6 @@ if (typeof jQuery !== 'undefined') {
             },
             "pageLength": 25,
             "order": [[3, 'desc']]
-        });
-    });
-}
-</script>
-
-<script>
-if (typeof jQuery !== 'undefined') {
-    $(document).ready(function() {
-        $('#laporanTable').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
-            },
-            "pageLength": 25
         });
     });
 }

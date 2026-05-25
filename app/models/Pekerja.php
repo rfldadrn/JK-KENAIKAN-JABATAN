@@ -148,4 +148,22 @@ class Pekerja extends Model
         $keyword = "%{$keyword}%";
         return $this->query($sql, [':keyword' => $keyword]);
     }
+
+    /**
+     * Get employee performance report data
+     */
+    public function getKinerjaLaporan()
+    {
+        $sql = "SELECT p.nip, p.nama_lengkap, p.nilai_kinerja_terakhir,
+                p.tanggal_bergabung, p.status_kepegawaian,
+                d.nama_divisi, j.nama_jabatan,
+                g.kode_golongan
+                FROM {$this->table} p
+                LEFT JOIN divisi d ON p.id_divisi = d.id_divisi
+                LEFT JOIN jabatan j ON p.id_jabatan = j.id_jabatan
+                LEFT JOIN golongan_jabatan g ON p.id_golongan_saat_ini = g.id_golongan
+                ORDER BY p.nilai_kinerja_terakhir DESC, p.nama_lengkap ASC";
+
+        return $this->query($sql);
+    }
 }

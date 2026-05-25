@@ -1,3 +1,5 @@
+<?php $pekerja = $pekerja ?? []; ?>
+
 <div class="content-header">
     <h1><i class="fas fa-chart-bar me-2"></i>Laporan Data Karyawan</h1>
     <nav aria-label="breadcrumb">
@@ -12,9 +14,14 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Daftar Karyawan</h5>
-        <button onclick="window.print()" class="btn btn-sm btn-primary">
-            <i class="fas fa-print"></i> Cetak
-        </button>
+        <div class="d-flex gap-2">
+            <a href="<?= BASE_URL ?>/laporan/cetakDataKaryawan" target="_blank" class="btn btn-sm btn-primary">
+                <i class="fas fa-print"></i> Cetak Data Karyawan
+            </a>
+            <a href="<?= BASE_URL ?>/laporan/cetakKinerjaKaryawan" target="_blank" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-chart-line"></i> Cetak Kinerja
+            </a>
+        </div>
     </div>
     <div class="card-body">
         <div class="table-responsive">

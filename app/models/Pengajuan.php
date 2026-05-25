@@ -175,4 +175,57 @@ class Pengajuan extends Model
         
         return $this->queryOne($sql);
     }
+
+    /**
+     * Get submission history report
+     */
+    public function getRiwayatLaporan()
+    {
+        $sql = "SELECT pen.id_pengajuan, pen.nomor_pengajuan, pen.tanggal_pengajuan, pen.status,
+                pen.tanggal_efektif, pen.nomor_sk,
+                p.nip, p.nama_lengkap,
+                d.nama_divisi, j.nama_jabatan,
+                g_sekarang.kode_golongan as golongan_sekarang,
+                g_tujuan.kode_golongan as golongan_tujuan,
+                COUNT(ah.id_approval) as jumlah_approval,
+                MAX(ah.tanggal_approval) as tanggal_approval_terakhir
+                FROM {$this->table} pen
+                INNER JOIN pekerja p ON pen.id_pekerja = p.id_pekerja
+                LEFT JOIN divisi d ON p.id_divisi = d.id_divisi
+                LEFT JOIN jabatan j ON p.id_jabatan = j.id_jabatan
+                LEFT JOIN golongan_jabatan g_sekarang ON pen.id_golongan_saat_ini = g_sekarang.id_golongan
+                LEFT JOIN golongan_jabatan g_tujuan ON pen.id_golongan_diajukan = g_tujuan.id_golongan
+                LEFT JOIN approval_history ah ON ah.id_pengajuan = pen.id_pengajuan
+                GROUP BY pen.id_pengajuan, pen.nomor_pengajuan, pen.tanggal_pengajuan, pen.status,
+                         pen.tanggal_efektif, pen.nomor_sk,
+                         p.nip, p.nama_lengkap,
+                         d.nama_divisi, j.nama_jabatan,
+                         g_sekarang.kode_golongan, g_tujuan.kode_golongan
+                ORDER BY pen.tanggal_pengajuan DESC";
+
+        return $this->query($sql);
+    }
+
+    /**
+     * Get approved promotion results report
+     */
+    public function getHasilKenaikanLaporan()
+    {
+        $sql = "SELECT pen.nomor_pengajuan, pen.tanggal_pengajuan, pen.tanggal_efektif, pen.nomor_sk,
+                p.nip, p.nama_lengkap,
+                d.nama_divisi, j.nama_jabatan,
+                g_sekarang.kode_golongan as golongan_lama,
+                g_tujuan.kode_golongan as golongan_baru,
+                g_tujuan.nama_golongan as nama_golongan_baru
+                FROM {$this->table} pen
+                INNER JOIN pekerja p ON pen.id_pekerja = p.id_pekerja
+                LEFT JOIN divisi d ON p.id_divisi = d.id_divisi
+                LEFT JOIN jabatan j ON p.id_jabatan = j.id_jabatan
+                LEFT JOIN golongan_jabatan g_sekarang ON pen.id_golongan_saat_ini = g_sekarang.id_golongan
+                LEFT JOIN golongan_jabatan g_tujuan ON pen.id_golongan_diajukan = g_tujuan.id_golongan
+                WHERE pen.status = 'disetujui'
+                ORDER BY COALESCE(pen.tanggal_efektif, pen.updated_at, pen.tanggal_pengajuan) DESC";
+
+        return $this->query($sql);
+    }
 }
